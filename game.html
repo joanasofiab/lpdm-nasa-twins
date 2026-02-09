@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulação de Adaptação | NASA Twins Study</title>
+
+  <style>
+    :root{
+      --neon-cyan:#00f2ff;
+      --neon-purple:#bc13fe;
+      --dark:#050510;
+      --glass:rgba(10,10,25,0.92);
+      --border:rgba(0,242,255,0.25);
+      --ok:#28ff6a;
+      --warn:#ffcc00;
+      --bad:#ff3b3b;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      min-height:100vh;
+      background:var(--dark);
+      color:#e0e0ff;
+      font-family: "Rajdhani","Segoe UI",system-ui,sans-serif;
+      padding:18px;
+      background-image:
+        radial-gradient(circle at 50% 40%, rgba(20,20,60,0.55) 0%, transparent 70%),
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg,var(--border) 1px, transparent 1px);
+      background-size:100% 100%, 40px 40px, 40px 40px;
+    }
+    .wrap{max-width:980px;margin:0 auto}
+    header{
+      display:flex;align-items:center;justify-content:space-between;
+      border-bottom:2px solid var(--neon-cyan);
+      padding-bottom:12px;margin-bottom:18px;
+    }
+    .title{
+      font-family:"Orbitron","Segoe UI",system-ui,sans-serif;
+      letter-spacing:2px;text-transform:uppercase;
+      color:var(--neon-cyan);
+      text-shadow:0 0 10px var(--neon-cyan);
+      font-size:1.05rem;
+    }
+    .btn-link{
+      border:1px solid var(--neon-purple);
+      color:var(--neon-purple);
+      text-decoration:none;
+      padding:8px 14px;
+      font-family:"Orbitron","Segoeajdhani",sans-serif;
+      text-transform:uppercase;
+      font-size:0.75rem;
+      transition:.2s;
+    }
+    .btn-link:hover{background:var(--neon-purple);color:#fff;box-shadow:0 0 14px rgba(188,19,254,.35)}
+    .card{
+      background:var(--glass);
+      border:1px solid var(--border);
+      box-shadow:0 0 30px rgba(0,0,0,.55);
+      padding:18px;
+      position:relative;
+    }
+    .grid{display:grid;gap:14px}
+    .grid-2{grid-template-columns:1.05fr .95fr}
+    @media (max-width:860px){.grid-2{grid-template-columns:1fr}}
+
+    .kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    @media (max-width:680px){.kpis{grid-template-columns:1fr}}
+    .kpi{
+      border:1px solid rgba(255,255,255,0.10);
+      background:rgba(255,255,255,0.04);
+      padding:12px;border-radius:10px;
+    }
+    .kpi .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .kpi .label{font-family:"Orbitron",sans-serif;font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:#fff}
+    .kpi .val{font-family:"JetBrains Mono",monospace;font-size:.85rem;color:#cfcfe8}
+    .bar{
+      height:10px;border-radius:999px;background:#1c1c2a;overflow:hidden;
+      border:1px solid rgba(255,255,255,0.08);
+    }
+    .fill{height:100%;width:50%}
+    .hint{font-size:.9rem;color:#cfcfe8;line-height:1.55}
+    .mono{font-family:"JetBrains Mono",monospace}
+    .badge{
+      display:inline-block;
+      font-size:.7rem;
+      font-family:"Orbitron",sans-serif;
+      text-transform:uppercase;
+      letter-spacing:1px;
+      padding:4px 8px;
+      border:1px solid rgba(255,255,255,0.14);
+      background:rgba(0,0,0,0.25);
+      border-radius:999px;
+      margin-bottom:8px;
+    }
+
+    .choices{display:grid;gap:10px}
+    .choice{
+      border:1px solid rgba(255,255,255,0.10);
+      background:rgba(255,255,255,0.04);
+      padding:12px;border-radius:10px;
+      cursor:pointer;
+      transition:.15s;
+    }
+    .choice:hover{border-color:var(--neon-cyan);box-shadow:0 0 18px rgba(0,242,255,.10)}
+    .choice h4{
+      font-family:"Orbitron",sans-serif;
+      font-size:.82rem;letter-spacing:1px;text-transform:uppercase;color:#fff;
+      margin-bottom:4px;
+    }
+    .choice p{color:#cfcfe8;font-size:.92rem;line-height:1.45}
+    .choice .effects{margin-top:8px;font-size:.82rem;color:#9fefff}
+    .choice[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
+    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    button{
+      border:none;cursor:pointer;
+      font-family:"Orbitron",sans-serif;
+      text-transform:uppercase;
+      letter-spacing:1px;
+      font-size:.75rem;
+      padding:10px 14px;
+      transition:.2s;
+      flex:1;
+      min-width:160px;
+    }
+    .btn-primary{background:var(--neon-cyan);color:#000}
+    .btn-primary:hover{box-shadow:0 0 16px rgba(0,242,255,.35)}
+    .btn-secondary{background:var(--neon-purple);color:#fff}
+    .btn-secondary:hover{box-shadow:0 0 16px rgba(188,19,254,.35)}
+    .btn-ghost{
+      background:transparent;color:#cfcfe8;
+      border:1px solid rgba(255,255,255,0.18);
+    }
+    .btn-ghost:hover{border-color:#fff;color:#fff}
+    .log{
+      border:1px solid rgba(255,255,255,0.10);
+      background:rgba(0,0,0,0.25);
+      padding:12px;border-radius:10px;
+      max-height:260px;overflow:auto;
+      font-size:.9rem;line-height:1.5;color:#cfcfe8;
+    }
+    .log .item{padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08)}
+    .log .item:last-child{border-bottom:none}
+    .ok{color:var(--ok)}
+    .warn{color:var(--warn)}
+    .bad{color:var(--bad)}
+    .small{font-size:.85rem;color:#bdbde6}
+    .screen{display:none}
+    .screen.active{display:block}
+  </style>
+
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@300;400&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">Simulação de Adaptação — NASA Twins Study</div>
+      <a class="btn-link" href="index.html">← Voltar ao Portefólio</a>
+    </header>
+
+    <div class="card">
+      <!-- SCREEN: GAME -->
+      <div id="gameScreen" class="screen active">
+        <div class="grid grid-2">
+          <div>
+            <span class="badge" id="dayBadge">Dia 1 / 5</span>
+            <h2 style="font-family:Orbitron,sans-serif;letter-spacing:2px;text-transform:uppercase;color:#fff;margin-bottom:8px;font-size:1.05rem;">
+              Escolhe a rotina de hoje
+            </h2>
+            <p class="hint" id="scenarioText"></p>
+
+            <div style="margin-top:14px;">
+              <h3 style="font-family:Orbitron,sans-serif;letter-spacing:2px;text-transform:uppercase;color:#fff;font-size:.82rem;margin-bottom:8px;">
+                Opções (clica para aplicar)
+              </h3>
+              <div class="choices" id="choices"></div>
+            </div>
+
+            <div class="row">
+              <button class="btn-ghost" id="resetBtn" type="button">Reiniciar</button>
+              <button class="btn-secondary" id="skipBtn" type="button">Passar Dia</button>
+            </div>
+
+            <p class="small" style="margin-top:8px;">
+              Nota: a simulação é educativa (não médica). As métricas modelam tendências típicas: sono/exercício → cognição/músculo; stress → imunidade; radiação → risco.
+            </p>
+          </div>
+
+          <div>
+            <h3 style="font-family:Orbitron,sans-serif;letter-spacing:2px;text-transform:uppercase;color:#fff;font-size:.82rem;margin-bottom:10px;">
+              Telemetria do Astronauta
+            </h3>
+
+            <div class="kpis">
+              <div class="kpi">
+                <div class="top">
+                  <div class="label">Cognição</div>
+                  <div class="val mono" id="cogVal">70</div>
+                </div>
+                <div class="bar"><div class="fill" id="cogBar"></div></div>
+              </div>
+
+              <div class="kpi">
+                <div class="top">
+                  <div class="label">Imunidade</div>
+                  <div class="val mono" id="immVal">70</div>
+                </div>
+                <div class="bar"><div class="fill" id="immBar"></div></div>
+              </div>
+
+              <div class="kpi">
+                <div class="top">
+                  <div class="label">Massa muscular</div>
+                  <div class="val mono" id="musVal">70</div>
+                </div>
+                <div class="bar"><div class="fill" id="musBar"></div></div>
+              </div>
+
+              <div class="kpi">
+                <div class="top">
+                  <div class="label">Risco radiação</div>
+                  <div class="val mono" id="radVal">20</div>
+                </div>
+                <div class="bar"><div class="fill" id="radBar"></div></div>
+              </div>
+            </div>
+
+            <div style="margin-top:14px;">
+              <h3 style="font-family:Orbitron,sans-serif;letter-spacing:2px;text-transform:uppercase;color:#fff;font-size:.82rem;margin-bottom:8px;">
+                Log de decisões
+              </h3>
+              <div class="log" id="log"></div>
+            </div>
+
+            <div class="row">
+              <button class="btn-primary" id="finishBtn" type="button">Finalizar Missão</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN: RESULTS -->
+      <div id="resultScreen" class="screen">
+        <span class="badge">Relatório Final</span>
+        <h2 style="font-family:Orbitron,sans-serif;letter-spacing:2px;text-transform:uppercase;color:#fff;margin-bottom:10px;font-size:1.05rem;">
+          Diagnóstico de Adaptação
+        </h2>
+
+        <p class="hint" id="finalSummary"></p>
+
+        <div class="kpis" style="margin-top:14px;">
+          <div class="kpi">
+            <div class="top"><div class="label">Cognição</div><div class="val mono" id="cogVal2"></div></div>
+            <div class="bar"><div class="fill" id="cogBar2"></div></div>
+          </div>
+          <div class="kpi">
+            <div class="top"><div class="label">Imunidade</div><div class="val mono" id="immVal2"></div></div>
+            <div class="bar"><div class="fill" id="immBar2"></div></div>
+          </div>
+          <div class="kpi">
+            <div class="top"><div class="label">Massa muscular</div><div class="val mono" id="musVal2"></div></div>
+            <div class="bar"><div class="fill" id="musBar2"></div></div>
+          </div>
+          <div class="kpi">
+            <div class="top"><div class="label">Risco radiação</div><div class="val mono" id="radVal2"></div></div>
+            <div class="bar"><div class="fill" id="radBar2"></div></div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;">
+          <h3 style="font-family:Orbitron,sans-serif;letter-spacing:2px;text-transform:uppercase;color:#fff;font-size:.82rem;margin-bottom:8px;">
+            Recomendações (baseadas no teu percurso)
+          </h3>
+          <div class="log" id="reco"></div>
+        </div>
+
+        <div class="row">
+          <button class="btn-secondary" id="playAgainBtn" type="button">Jogar novamente</button>
+          <a class="btn-link" href="index.html" style="display:inline-block;text-align:center;flex:1;min-width:160px;padding:10px 14px;">Voltar ao Portefólio</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ====== CONFIG ======
+    const TOTAL_DAYS = 5;
+
+    // Pequenos cenários para contextualizar (educativo)
+    const SCENARIOS = [
+      "Dia de rotina normal na ISS. Tens de equilibrar sono, exercício e tarefas técnicas.",
+      "Recebeste uma carga extra de trabalho (experiências científicas + comunicação com a Terra).",
+      "Microgravidade a afetar mais o corpo: risco de perda muscular aumenta se falhares o treino.",
+      "Dia com stresse elevado (pequena anomalia técnica). Importa gerir o stress e o descanso.",
+      "Último dia: otimiza para regressar com boa cognição e minimizar marcadores inflamatórios."
+    ];
+
+    // Cada opção aplica deltas às métricas
+    // Cognição (0-100), Imunidade (0-100), Músculo (0-100), Radiação (0-100 onde mais = pior)
+    const OPTIONS = [
+      {
+        title: "Sono otimizado (8h + higiene do sono)",
+        desc: "Priorizas descanso e consistência circadiana.",
+        effects: { cog:+8, imm:+4, mus:+0, rad:+0 }
+      },
+      {
+        title: "Treino completo (resistência + cardio)",
+        desc: "Sessão completa para combater perda muscular e apoiar metabolismo.",
+        effects: { cog:+2, imm:+2, mus:+10, rad:+0 }
+      },
+      {
+        title: "Treino curto (tempo limitado)",
+        desc: "Treino mínimo — mantém, mas não otimiza.",
+        effects: { cog:+1, imm:+0, mus:+4, rad:+0 }
+      },
+      {
+        title: "Nutrição equilibrada (proteína + micronutrientes)",
+        desc: "Foco em proteína e alimentos funcionais (quando disponíveis).",
+        effects: { cog:+2, imm:+6, mus:+3, rad:+0 }
+      },
+      {
+        title: "Rotina anti-stress (respiração + pausas)",
+        desc: "Reduzes stresse e cargas inflamatórias.",
+        effects: { cog:+4, imm:+6, mus:+0, rad:+0 }
+      },
+      {
+        title: "Exposição extra à radiação (EVA/atividade externa)",
+        desc: "Ganhas dados, mas aumentas risco de dano genómico.",
+        effects: { cog:-2, imm:-3, mus:+0, rad:+12 }
+      },
+      {
+        title: "Dia intenso de trabalho (pouco descanso)",
+        desc: "Cumpre objetivos, mas aumenta fadiga e stresse.",
+        effects: { cog:-6, imm:-5, mus:-2, rad:+0 }
+      },
+      {
+        title: "Hidratação + rotina intestinal (microbioma)",
+        desc: "Apoias digestão e potencialmente o equilíbrio do microbioma.",
+        effects: { cog:+1, imm:+4, mus:+0, rad:+0 }
+      }
+    ];
+
+    // ====== STATE ======
+    const STORAGE_KEY = "nasa_twins_game_v1";
+    let day = 1;
+    let usedToday = false;
+
+    let state = {
+      cog: 70,
+      imm: 70,
+      mus: 70,
+      rad: 20,
+      log: []
+    };
+
+    // ====== DOM ======
+    const gameScreen = document.getElementById("gameScreen");
+    const resultScreen = document.getElementById("resultScreen");
+
+    const dayBadge = document.getElementById("dayBadge");
+    const scenarioText = document.getElementById("scenarioText");
+    const choicesEl = document.getElementById("choices");
+    const logEl = document.getElementById("log");
+
+    const cogVal = document.getElementById("cogVal");
+    const immVal = document.getElementById("immVal");
+    const musVal = document.getElementById("musVal");
+    const radVal = document.getElementById("radVal");
+
+    const bars = {
+      cog: document.getElementById("cogBar"),
+      imm: document.getElementById("immBar"),
+      mus: document.getElementById("musBar"),
+      rad: document.getElementById("radBar"),
+    };
+
+    const resetBtn = document.getElementById("resetBtn");
+    const skipBtn = document.getElementById("skipBtn");
+    const finishBtn = document.getElementById("finishBtn");
+
+    // results
+    const finalSummary = document.getElementById("finalSummary");
+    const reco = document.getElementById("reco");
+
+    const cogVal2 = document.getElementById("cogVal2");
+    const immVal2 = document.getElementById("immVal2");
+    const musVal2 = document.getElementById("musVal2");
+    const radVal2 = document.getElementById("radVal2");
+
+    const bars2 = {
+      cog: document.getElementById("cogBar2"),
+      imm: document.getElementById("immBar2"),
+      mus: document.getElementById("musBar2"),
+      rad: document.getElementById("radBar2"),
+    };
+
+    const playAgainBtn = document.getElementById("playAgainBtn");
+
+    // ====== HELPERS ======
+    const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+    function colorFor(v, inverse=false){
+      // inverse: para radiação (quanto maior pior)
+      const x = inverse ? (100 - v) : v;
+      if(x >= 70) return "var(--ok)";
+      if(x >= 45) return "var(--warn)";
+      return "var(--bad)";
+    }
+
+    function setBar(el, v, inverse=false){
+      el.style.width = `${clamp(v,0,100)}%`;
+      el.style.background = `linear-gradient(90deg, ${colorFor(v,inverse)}, rgba(255,255,255,0.12))`;
+    }
+
+    function save(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ day, usedToday, state }));
+    }
+
+    function load(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return false;
+        const data = JSON.parse(raw);
+        if(!data || !data.state) return false;
+        day = data.day || 1;
+        usedToday = !!data.usedToday;
+        state = data.state;
+        return true;
+      }catch{ return false; }
+    }
+
+    function logLine(txt, cls=""){
+      const item = { txt, cls, t: Date.now(), d: day };
+      state.log.unshift(item);
+      renderLog();
+    }
+
+    function renderLog(){
+      logEl.innerHTML = state.log.slice(0, 12).map(i => `
+        <div class="item">
+          <span class="mono" style="opacity:.8;">D${i.d}</span> —
+          <span class="${i.cls}">${i.txt}</span>
+        </div>
+      `).join("") || `<div class="item">Sem ações ainda. Escolhe uma opção.</div>`;
+    }
+
+    function renderKpis(){
+      cogVal.textContent = state.cog;
+      immVal.textContent = state.imm;
+      musVal.textContent = state.mus;
+      radVal.textContent = state.rad;
+
+      setBar(bars.cog, state.cog);
+      setBar(bars.imm, state.imm);
+      setBar(bars.mus, state.mus);
+      setBar(bars.rad, state.rad, true); // inverse for rad
+    }
+
+    function renderHeader(){
+      dayBadge.textContent = `Dia ${day} / ${TOTAL_DAYS}`;
+      scenarioText.textContent = SCENARIOS[day-1] || "Rotina de missão.";
+    }
+
+    function effectsText(e){
+      const fmt = (k, v) => `${k.toUpperCase()} ${v>0?`+${v}`:v}`;
+      // COG/IMM/MUS/RAD
+      return [
+        fmt("cog", e.cog),
+        fmt("imm", e.imm),
+        fmt("mus", e.mus),
+        fmt("rad", e.rad)
+      ].join("  •  ");
+    }
+
+    function renderChoices(){
+      choicesEl.innerHTML = OPTIONS.map((o, idx) => `
+        <div class="choice" role="button" tabindex="0" data-idx="${idx}" aria-disabled="${usedToday}">
+          <h4>${o.title}</h4>
+          <p>${o.desc}</p>
+          <div class="effects mono">Efeitos: ${effectsText(o.effects)}</div>
+        </div>
+      `).join("");
+
+      choicesEl.querySelectorAll(".choice").forEach(card => {
+        const act = () => {
+          if(usedToday) return;
+          const idx = Number(card.dataset.idx);
+          applyOption(idx);
+        };
+        card.addEventListener("click", act);
+        card.addEventListener("keydown", (e) => {
+          if(e.key === "Enter" || e.key === " ") { e.preventDefault(); act(); }
+        });
+      });
+    }
+
+    function applyOption(idx){
+      const o = OPTIONS[idx];
+
+      state.cog = clamp(state.cog + o.effects.cog, 0, 100);
+      state.imm = clamp(state.imm + o.effects.imm, 0, 100);
+      state.mus = clamp(state.mus + o.effects.mus, 0, 100);
+      state.rad = clamp(state.rad + o.effects.rad, 0, 100);
+
+      // “custo” de microgravidade diário: sem treino, músculo cai um pouco
+      // Aqui simplificamos: se a opção NÃO tiver mus>=4, cai -3
+      if(o.effects.mus < 4){
+        state.mus = clamp(state.mus - 3, 0, 100);
+      }
+
+      // stresse/radiação afetam imunidade ligeiramente (modelo didático)
+      if(o.effects.rad > 0){
+        state.imm = clamp(state.imm - 1, 0, 100);
+      }
+
+      const cls =
+        (o.effects.rad >= 10) ? "warn" :
+        (o.effects.cog < 0 || o.effects.imm < 0 || o.effects.mus < 0) ? "warn" : "ok";
+
+      logLine(`Ação: ${o.title}`, cls);
+
+      usedToday = true;
+      renderChoices();
+      renderKpis();
+      save();
+    }
+
+    function nextDay(){
+      if(day >= TOTAL_DAYS){
+        showResults();
+        return;
+      }
+      day += 1;
+      usedToday = false;
+
+      // “decadência” diária leve: fadiga + ambiente hostil
+      state.cog = clamp(state.cog - 1, 0, 100);
+      state.imm = clamp(state.imm - 1, 0, 100);
+      // radiação acumula um pouco sempre
+      state.rad = clamp(state.rad + 2, 0, 100);
+
+      logLine("Fim do dia: telemetria atualizada.", "mono");
+      renderAll();
+      save();
+    }
+
+    function resetAll(){
+      localStorage.removeItem(STORAGE_KEY);
+      day = 1;
+      usedToday = false;
+      state = { cog:70, imm:70, mus:70, rad:20, log:[] };
+      renderAll();
+      showGame();
+      save();
+    }
+
+    function scoreLabel(){
+      // simples: média (cog/imm/mus) penalizada por radiação
+      const base = (state.cog + state.imm + state.mus) / 3;
+      const final = clamp(Math.round(base - (state.rad * 0.35)), 0, 100);
+
+      if(final >= 75) return { final, label:"ADAPTAÇÃO EXCELENTE", cls:"ok" };
+      if(final >= 55) return { final, label:"ADAPTAÇÃO ESTÁVEL", cls:"warn" };
+      return { final, label:"RISCO ELEVADO", cls:"bad" };
+    }
+
+    function buildRecommendations(){
+      const out = [];
+
+      if(state.cog < 60) out.push("• Aumentar consistência do sono e reduzir dias de trabalho intenso (cognição).");
+      else out.push("• Cognição estável: manter higiene do sono e pausas estruturadas.");
+
+      if(state.imm < 60) out.push("• Reforçar rotina anti-stress e nutrição equilibrada (imunidade/inflamação).");
+      else out.push("• Imunidade em bom nível: manter nutrição + gestão de stress.");
+
+      if(state.mus < 60) out.push("• Priorizar treino completo (resistência) para combater perda muscular em microgravidade.");
+      else out.push("• Massa muscular controlada: continuar treino regular.");
+
+      if(state.rad > 55) out.push("• Reduzir exposição extra (EVA) e reforçar protocolos de mitigação de radiação (risco genómico).");
+      else out.push("• Risco de radiação controlado: manter monitorização e limitar exposições desnecessárias.");
+
+      return out;
+    }
+
+    function showResults(){
+      const s = scoreLabel();
+      const summary = `Resultado: ${s.final}/100 — ${s.label}. A simulação modela como escolhas de rotina podem influenciar cognição, imunidade, massa muscular e risco de radiação em missões longas.`;
+      finalSummary.innerHTML = ` <span class="${s.cls}"><strong>${summary}</strong></span>`;
+
+      // preencher KPIs
+      cogVal2.textContent = state.cog; immVal2.textContent = state.imm; musVal2.textContent = state.mus; radVal2.textContent = state.rad;
+      setBar(bars2.cog, state.cog);
+      setBar(bars2.imm, state.imm);
+      setBar(bars2.mus, state.mus);
+      setBar(bars2.rad, state.rad, true);
+
+      reco.innerHTML = buildRecommendations().map(x => `<div class="item">${x}</div>`).join("");
+
+      resultScreen.classList.add("active");
+      gameScreen.classList.remove("active");
+      save();
+    }
+
+    function showGame(){
+      resultScreen.classList.remove("active");
+      gameScreen.classList.add("active");
+    }
+
+    function renderAll(){
+      renderHeader();
+      renderChoices();
+      renderLog();
+      renderKpis();
+    }
+
+    // ====== EVENTS ======
+    resetBtn.addEventListener("click", resetAll);
+    skipBtn.addEventListener("click", nextDay);
+    finishBtn.addEventListener("click", showResults);
+    playAgainBtn.addEventListener("click", resetAll);
+
+    // ====== INIT ======
+    load();
+    renderAll();
+    save();
+  </script>
+</body>
+</html>

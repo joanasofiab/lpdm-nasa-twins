@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="pt-PT" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NASA Twins Study | Portefólio Digital LPDM</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome para ícones -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@300;400&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --neon-cyan:#00f2ff;
+      --neon-purple:#bc13fe;
+      --deep-space:#050510;
+      --grid-color:rgba(0,242,255,0.05);
+    }
+
+    body{
+      background-color:var(--deep-space);
+      color:#e0e0ff;
+      font-family:'Rajdhani',sans-serif;
+      background-image:
+        linear-gradient(var(--grid-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+      background-size:30px 30px;
+    }
+
+    h1,h2,h3,.font-sci-fi{
+      font-family:'Orbitron',sans-serif;
+      text-transform:uppercase;
+      letter-spacing:2px;
+    }
+
+    .mono{ font-family:'JetBrains Mono',monospace; }
+
+    .sci-fi-card{
+      background:rgba(10,10,25,0.8);
+      clip-path:polygon(0% 0%,95% 0%,100% 5%,100% 100%,5% 100%,0% 95%);
+      border:1px solid rgba(0,242,255,0.2);
+      transition:all 0.3s ease;
+    }
+
+    .sci-fi-card:hover{
+      border-color:var(--neon-cyan);
+      box-shadow:0 0 20px rgba(0,242,255,0.15);
+    }
+
+    .glitch-text:hover{
+      text-shadow:2px 0 var(--neon-purple), -2px 0 var(--neon-cyan);
+    }
+
+    .nav-link{
+      position:relative;
+      transition:color 0.3s;
+    }
+    .nav-link::after{
+      content:'';
+      position:absolute;
+      bottom:-2px;
+      left:0;
+      width:0;
+      height:1px;
+      background:var(--neon-cyan);
+      transition:width 0.3s;
+    }
+    .nav-link:hover::after{ width:100%; }
+
+    .status-dot{
+      height:8px; width:8px;
+      background-color:var(--neon-cyan);
+      border-radius:50%;
+      display:inline-block;
+      box-shadow:0 0 8px var(--neon-cyan);
+      animation:pulse 2s infinite;
+    }
+    @keyframes pulse{
+      0%{opacity:1}
+      50%{opacity:0.3}
+      100%{opacity:1}
+    }
+
+    .marquee{ white-space:nowrap; overflow:hidden; box-sizing:border-box; }
+    .marquee span{
+      display:inline-block;
+      padding-left:100%;
+      animation:marquee 30s linear infinite;
+    }
+    @keyframes marquee{
+      0%{ transform:translate(0,0) }
+      100%{ transform:translate(-100%,0) }
+    }
+
+    ::-webkit-scrollbar{ width:6px; }
+    ::-webkit-scrollbar-track{ background:var(--deep-space); }
+    ::-webkit-scrollbar-thumb{ background:var(--neon-purple); border-radius:3px; }
+
+    .scanline{
+      width:100%;
+      height:2px;
+      background:rgba(0,242,255,0.1);
+      position:fixed;
+      top:0; left:0;
+      z-index:100;
+      pointer-events:none;
+      animation:scan 8s linear infinite;
+    }
+    @keyframes scan{
+      0%{ top:-10% }
+      100%{ top:110% }
+    }
+  </style>
+</head>
+
+<body class="antialiased">
+  <div class="scanline"></div>
+
+  <!-- CONFIG: só mexes aqui -->
+  <script>
+    // Se estiver no mesmo GitHub Pages: deixa assim
+    const QUIZ_URL = "quiz.html";
+
+    // ✅ cria um ficheiro game.html na mesma pasta do index.html
+    const GAME_URL = "game.html";
+
+    // Se quiseres trocar as imagens, faz aqui e o HTML fica limpo
+    const IMG = {
+      mmEsp: "assets/images/mapa_mental_especialistas.png",
+      mmGer: "assets/images/mapa_mental_publico.png",
+      gaEspEn: "assets/images/ga_esp_en.png",
+      gaEspPt: "assets/images/ga_esp_pt.png",
+      gaGerEn: "assets/images/ga_geral_en.png",
+      gaGerPt: "assets/images/ga_geral_pt.png",
+    };
+  </script>
+
+  <!-- 1. HERO / CAPA -->
+  <header id="apresentacao" class="min-h-screen flex flex-col justify-center items-center p-8 relative overflow-hidden text-center">
+    <div class="absolute top-10 left-10 opacity-50 mono text-xs text-cyan-400 text-left">
+      SYSTEM_UPLINK: ACTIVE<br>
+      COORDS: 41.5454° N, 8.4265° W (BRAGA, PT)
+    </div>
+
+    <div class="z-10 space-y-6 max-w-5xl">
+      <div class="inline-block px-4 py-1 border border-cyan-500 text-cyan-400 text-xs font-sci-fi mb-4 tracking-widest bg-cyan-950/20">
+        MISSION LOG: LPDM // STATUS: NOMINAL
+      </div>
+
+      <h1 class="text-5xl md:text-7xl font-bold glitch-text text-white">
+        NASA Twins Study<br>
+        <span class="text-cyan-400">Portefólio Digital</span>
+      </h1>
+
+      <p class="text-xl text-purple-400 font-sci-fi">Localização e Produção Digital Multilingue (LPDM)</p>
+
+      <div class="mt-4 text-cyan-500 font-sci-fi text-sm tracking-widest">01. Apresentação do Projeto</div>
+
+      <!-- ID Card -->
+      <div class="sci-fi-card p-6 border-l-4 border-l-cyan-500 inline-block text-left mt-8 bg-black/60">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2 text-sm uppercase tracking-wider">
+          <div><span class="text-cyan-500">Estudante:</span> Joana Sofia Brito Alves</div>
+          <div><span class="text-cyan-500">Nº:</span> PG57027</div>
+          <div><span class="text-cyan-500">Curso:</span> Mestrado em Tradução e Comunicação Multilingue</div>
+          <div><span class="text-cyan-500">Instituição:</span> Universidade do Minho (UMinho)</div>
+          <div><span class="text-cyan-500">Docente:</span> Sílvia Lima Gonçalves Araújo</div>
+          <div><span class="text-cyan-500">Ano Letivo:</span> 2025/2026</div>
+        </div>
+      </div>
+
+      <!-- Intro Text -->
+      <div class="max-w-3xl mx-auto text-lg text-gray-300 leading-relaxed mt-10 space-y-4">
+        <p>
+          Este portefólio constitui o produto final de um projeto de localização multimodal desenvolvido a partir do <em>NASA Twins Study</em>.
+          O trabalho partiu da análise e tradução de dois textos de partida em língua inglesa: um artigo científico de elevado impacto e um texto de divulgação dirigido a audiências jovens.
+          O desafio centrou-se na adaptação de conteúdos biomédicos complexos a diferentes perfis de recetores.
+        </p>
+        <p>
+          A estrutura apresentada organiza-se em dois percursos — <strong>Especialistas</strong> e <strong>Público Geral</strong>.
+          Através de mapas mentais, resumos gráficos, podcasts e módulos interativos, explora-se de que modo a multimodalidade e a variação terminológica contribuem para a eficácia da comunicação científica em contextos de localização digital.
+        </p>
+      </div>
+    </div>
+
+    <div class="absolute bottom-10 animate-bounce">
+      <a href="#sumario" class="text-cyan-400"><i class="fas fa-chevron-down fa-2x"></i></a>
+    </div>
+  </header>
+
+  <!-- 2. SUMÁRIO / NAVEGAÇÃO -->
+  <nav id="sumario" class="sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-cyan-900 py-4">
+    <div class="max-w-7xl mx-auto px-4 overflow-x-auto text-center">
+      <span class="block text-[10px] text-cyan-600 font-sci-fi mb-2 tracking-widest">MENU / ÍNDICE</span>
+      <ul class="flex space-x-8 text-xs font-sci-fi whitespace-nowrap justify-center">
+        <li><a href="#apresentacao" class="nav-link text-cyan-400">01. Apresentação</a></li>
+        <li><a href="#estrutura" class="nav-link">02. Estrutura</a></li>
+        <li><a href="#abstracts" class="nav-link">03. Abstracts</a></li>
+        <li><a href="#switch" class="nav-link">04. Localização</a></li>
+        <li><a href="#visuais" class="nav-link">05. Artefactos Visuais</a></li>
+        <li><a href="#traducoes" class="nav-link">06. Traduções (PT)</a></li>
+        <li><a href="#podcasts" class="nav-link">07. Podcasts</a></li>
+        <li><a href="#interativos" class="nav-link">08. Interativos</a></li>
+        <li><a href="#workspace" class="nav-link">09. Workspace</a></li>
+        <li><a href="#reflexao" class="nav-link">10. Reflexão Final</a></li>
+        <li><a href="#bibliografia" class="nav-link">11. Bibliografia</a></li>
+        <li><a href="#creditos" class="nav-link">12. Créditos</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto px-4 py-20 space-y-32">
+
+    <!-- 02. ESTRUTURA E NAVEGAÇÃO -->
+    <section id="estrutura" class="space-y-12">
+      <h2 class="text-3xl font-bold border-l-4 border-cyan-500 pl-4 text-white uppercase">02. Estrutura e Navegação</h2>
+      <div class="sci-fi-card p-8 bg-black/40">
+        <p class="text-lg leading-relaxed text-gray-300">
+          Os módulos de conteúdo iniciam-se no 03 e estendem-se até ao 12, após as secções de enquadramento (01–02).
+          A navegação é feita por âncoras no menu superior. Cada módulo corresponde a uma etapa do workflow de localização:
+          análise de fontes (EN), matriz de percursos, artefactos visuais, localização textual, produção áudio, interativos, workspace,
+          reflexão crítica e fontes bibliográficas.
+        </p>
+      </div>
+    </section>
+
+    <!-- 03. ABSTRACTS -->
+    <section id="abstracts" class="space-y-12">
+      <h2 class="text-3xl font-bold border-l-4 border-cyan-500 pl-4 text-white uppercase">03. Abstracts [Source EN]</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="sci-fi-card p-8 space-y-4">
+          <div class="flex justify-between items-center text-xs mono text-cyan-400">
+            <span>SOURCE: Science</span>
+            <span>DOI: 10.1126/science.aau8650</span>
+          </div>
+          <h3 class="text-xl font-bold text-white uppercase">The NASA Twins Study: A multidimensional analysis</h3>
+          <p class="text-sm text-gray-400 leading-relaxed italic">
+            The NASA Twins Study provided a unique opportunity to study the effects of spaceflight on the human body by comparing identical twin astronauts,
+            one on a year-long mission aboard the International Space Station and the other on Earth. Integrated longitudinal analyses revealed significant changes in multiple biological systems,
+            including telomere dynamics, genome instability, DNA methylation, and alterations in the gastrointestinal microbiota. While many variables returned to near-baseline levels following the mission,
+            specific changes in gene expression and persistent DNA damage were observed, highlighting the challenges of long-duration space exploration.
+          </p>
+          <div class="pt-4 border-t border-gray-800 text-[10px] text-cyan-500 uppercase tracking-widest">
+            Nota: Texto-base do percurso Especialistas.
+          </div>
+        </div>
+
+        <div class="sci-fi-card p-8 space-y-4 border-purple-900/40">
+          <div class="flex justify-between items-center text-xs mono text-purple-400">
+            <span>SOURCE: Frontiers for Young Minds</span>
+            <span>TARGET: General Audience</span>
+          </div>
+          <h3 class="text-xl font-bold text-white uppercase">Growing Up (and Older) in Space</h3>
+          <p class="text-sm text-gray-400 leading-relaxed">
+            Have you ever wondered if traveling to the stars could change who you are? By studying two twin brothers, Scott and Mark Kelly,
+            NASA scientists discovered how space affects our health. While Scott was in space for a year, his DNA, his eyes, and even the tiny bacteria in his gut changed compared to his brother on Earth.
+            This research is super important because it helps us understand how to keep astronauts healthy as we plan big trips to the Moon and even to Mars.
+          </p>
+          <div class="pt-4 border-t border-gray-800 text-[10px] text-purple-400 uppercase tracking-widest">
+            Nota: Texto-base do percurso Público Geral.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04. MATRIZ -->
+    <section id="switch" class="space-y-12">
+      <h2 class="text-3xl font-bold border-l-4 border-cyan-500 pl-4 text-white uppercase">04. Localização: Matriz de Percursos</h2>
+      <div class="sci-fi-card p-8 bg-black/40">
+        <p class="text-lg leading-relaxed text-gray-300 mb-8">
+          A localização digital de conteúdos científicos exige uma adaptação estratégica que vai além da tradução literal.
+          Alternar entre o percurso de Especialistas e o do Público Geral implica mudanças na densidade terminológica,
+          nas estratégias de explicitação e no tom.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div class="space-y-6">
+            <div class="flex items-center space-x-3">
+              <span class="status-dot"></span>
+              <h3 class="text-xl font-bold text-cyan-400 uppercase tracking-widest">Perfil: Especialistas</h3>
+            </div>
+            <div class="space-y-4 text-sm">
+              <p><strong class="text-cyan-500">Objetivo:</strong> Preservar rigor biomédico, causalidade científica e precisão léxica.</p>
+              <ul class="list-disc list-inside space-y-2 text-gray-400">
+                <li>Consistência terminológica (adesão à nomenclatura científica).</li>
+                <li>Manutenção de estruturas causais/hipotéticas e nuance.</li>
+                <li>Alta densidade informativa por segmento.</li>
+                <li>Coesão lógica com conectores formais.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="space-y-6">
+            <div class="flex items-center space-x-3">
+              <span class="status-dot bg-purple-500 shadow-purple-500"></span>
+              <h3 class="text-xl font-bold text-purple-400 uppercase tracking-widest">Perfil: Público Geral</h3>
+            </div>
+            <div class="space-y-4 text-sm">
+              <p><strong class="text-purple-500">Objetivo:</strong> Garantir legibilidade e envolvimento, reduzindo jargão.</p>
+              <ul class="list-disc list-inside space-y-2 text-gray-400">
+                <li>Paráfrase controlada para processos complexos.</li>
+                <li>Frases curtas e segmentação.</li>
+                <li>Explicitação de termos técnicos.</li>
+                <li>Foco no impacto prático ("por que importa").</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-12 overflow-x-auto">
+          <table class="w-full text-left border-collapse border border-gray-800 text-sm">
+            <thead class="bg-gray-900 text-cyan-400 font-sci-fi">
+              <tr>
+                <th class="p-4 border border-gray-800">Termo Técnico (EN)</th>
+                <th class="p-4 border border-gray-800">Especialistas (PT)</th>
+                <th class="p-4 border border-gray-800">Público Geral (PT)</th>
+              </tr>
+            </thead>
+            <tbody class="text-gray-300">
+              <tr>
+                <td class="p-4 border border-gray-800 italic">DNA methylation</td>
+                <td class="p-4 border border-gray-800 font-bold">metilação de ADN</td>
+                <td class="p-4 border border-gray-800">marcas químicas no ADN que influenciam a atividade dos genes</td>
+              </tr>
+              <tr>
+                <td class="p-4 border border-gray-800 italic">genome instability</td>
+                <td class="p-4 border border-gray-800 font-bold">instabilidade genómica</td>
+                <td class="p-4 border border-gray-800">danos ou alterações graves no material genético</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 05. VISUAIS -->
+    <section id="visuais" class="space-y-12">
+      <h2 class="text-3xl font-bold border-l-4 border-cyan-500 pl-4 text-white uppercase">05. Artefactos Visuais</h2>
+
+      <div class="space-y-16">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="space-y-4">
+            <div class="aspect-video border border-cyan-800 overflow-hidden bg-gray-900">
+              <img id="img-mm-esp" src="" alt="Figura 1 — Mapa mental (Especialistas)" class="w-full h-full object-cover">
+            </div>
+            <p class="text-sm text-gray-400">
+              O mapa mental para especialistas detalha a hierarquia dos biomarcadores e a correlação entre mudanças epigenéticas e respostas fisiológicas.
+            </p>
+          </div>
+
+          <div class="space-y-4">
+            <div class="aspect-video border border-purple-800 overflow-hidden bg-gray-900">
+              <img id="img-mm-ger" src="" alt="Figura 2 — Mapa mental (Público Geral)" class="w-full h-full object-cover">
+            </div>
+            <p class="text-sm text-gray-400">
+              Focado na narrativa “Scott Kelly vs Mark Kelly”, este mapa utiliza linguagem visual mais intuitiva e direta.
+            </p>
+          </div>
+        </div>
+
+        <div class="text-center">
+          <h3 class="text-xl font-bold mb-6 text-white uppercase text-center">Grelha de Graphical Abstracts</h3>
+
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+            <div class="aspect-square overflow-hidden bg-gray-900 border border-gray-800">
+              <img id="img-ga-esp-en" src="" alt="Graphical Abstract — Especialistas (EN)" class="w-full h-full object-cover">
+            </div>
+            <div class="aspect-square overflow-hidden bg-gray-900 border border-cyan-700">
+              <img id="img-ga-esp-pt" src="" alt="Graphical Abstract — Especialistas (PT-PT)" class="w-full h-full object-cover">
+            </div>
+            <div class="aspect-square overflow-hidden bg-gray-900 border border-gray-800">
+              <img id="img-ga-ger-en" src="" alt="Graphical Abstract — Público Geral (EN)" class="w-full h-full object-cover">
+            </div>
+            <div class="aspect-square overflow-hidden bg-gray-900 border border-purple-700">
+              <img id="img-ga-ger-pt" src="" alt="Graphical Abstract — Público Geral (PT-PT)" class="w-full h-full object-cover">
+            </div>
+          </div>
+
+          <div class="mt-6 text-[10px] font-sci-fi text-cyan-500 tracking-widest uppercase text-center">
+            STATUS: OK / ASSETS INTEGRATED
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06. TRADUÇÕES (SEM BOTÃO "VER COMPLETO") -->
+    <section id="traducoes" class="space-y-12">
+      <h2 class="text-3xl font-bold border-l-4 border-cyan-500 pl-4 text-white uppercase">06. Localização Textual (PT-PT)</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="sci-fi-card p-8 border-t-4 border-t-cyan-500">
+          <h3 class="text-lg font-bold text-white mb-4 uppercase">Tradução: Especialistas</h3>
+          <div class="text-gray-300 text-sm italic leading-relaxed mb-6">
+            "O NASA Twins Study permitiu uma análise longitudinal sem precedentes da homeostase humana sob condições de stresse ambiental extremo.
+            Os resultados indicaram que a duração dos telómeros nos glóbulos brancos de Scott Kelly aumentou significativamente durante o voo espacial,
+            uma observação inesperada que foi contrabalançada por uma redução rápida e pelo subsequente aumento de telómeros curtos após o regresso à Terra..."
+          </div>
+          <div class="pt-4 border-t border-gray-800">
+            <span class="text-[10px] text-cyan-500 font-sci-fi">STATUS: OK / QA VERIFIED</span>
+          </div>
+        </div>
+
+        <div class="sci-fi-card p-8 border-t-4 border-t-purple-500">
+          <h3 class="text-lg font-bold text-white mb-4 uppercase">Tradução: Público Geral</h3>
+          <div class="text-gray-300 text-sm leading-relaxed mb-6">
+            "Já pensaste se viajar para o espaço poderia mudar o teu corpo?
+            Ao estudar os irmãos gémeos Scott e Mark Kelly, os cientistas da NASA descobriram que viver fora da Terra causa mudanças reais na nossa saúde.
+            Enquanto o Scott passou um ano no espaço, o seu corpo reagiu ao ambiente difícil: os seus olhos mudaram, o seu sistema imunitário ficou em alerta e até o seu ADN sofreu pequenas marcas químicas..."
+          </div>
+          <div class="pt-4 border-t border-gray-800">
+            <span class="text-[10px] text-purple-500 font-sci-fi">STATUS: OK / QA VERIFIED</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07. PODCASTS -->
+    <section id="podcasts" class="space-y-12">
+      <h2 class="text-3xl font-bold border-l-4 border-cyan-500 pl-4 text-white uppercase">07. Podcasts (Produção Áudio)</h2>
+
+      <div class="sci-fi-card p-8 bg-black/40 space-y-8">
+        <p class="text-lg leading-relaxed text-gray-300">
+          A produção áudio constitui a extensão multimodal das traduções, permitindo testar a adaptação do conteúdo ao canal oral e reforçar acessibilidade, ritmo e retenção.
+          Foram desenvolvidas versões alinhadas com os dois percursos (Especialistas vs. Público Geral) e em duas línguas (EN e PT-PT), garantindo coerência terminológica e adequação de registo.
+        </p>
+
+        <div>
+          <h3 class="text-xl font-bold text-cyan-400 mb-4 uppercase tracking-widest">Entregáveis</h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mono text-sm text-gray-300">
+            <div class="p-3 border border-gray-800 hover:border-cyan-500 transition flex items-center gap-3">
+              <i class="fas fa-microphone text-cyan-500"></i>
+              <a href="assets/audio/podcast_especialistas_en.mp3" class="underline hover:text-cyan-300" target="_blank" rel="noopener">
+                Podcast — Especialistas (EN)
+              </a>
+            </div>
+
+            <div class="p-3 border border-gray-800 hover:border-cyan-500 transition flex items-center gap-3">
+              <i class="fas fa-microphone text-cyan-500"></i>
+              <a href="assets/audio/podcast_especialistas_pt.mp3" class="underline hover:text-cyan-300" target="_blank" rel="noopener">
+                Podcast — Especialistas (PT-PT)
+              </a>
+            </div>
+
+            <div class="p-3 border border-gray-800 hover:border-purple-500 transition flex items-center gap-3">
+              <i class="fas fa-microphone text-purple-500"></i>
+              <a href="assets/audio/podcast_publico_en.mp3" class="underline hover:text-purple-300" target="_blank" rel="noopener">
+                Podcast — Público Geral (EN)
+              </a>
+            </div>
+
+            <div class="p-3 border border-gray-800 hover:border-purple-500 transition flex items-center gap-3">
+              <i class="fas fa-microphone text-purple-500"></i>
+              <a href="assets/audio/podcast_publico_pt.mp3" class="underline hover:text-purple-300" target="_blank" rel="noopener">
+                Podcast — Público Geral (PT-PT)
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-bold text-white mb-4 uppercase tracking-widest">Decisões de Produção e QA</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-gray-400">
+            <ul class="space-y-3">
+              <li><strong class="text-cyan-500">Especialistas:</strong> locução neutra, ritmo estável, articulação cuidada de termos técnicos (ex.: metilação de ADN, instabilidade genómica), mantendo densidade informativa e conectores formais.</li>
+            </ul>
+            <ul class="space-y-3">
+              <li><strong class="text-purple-500">Público Geral:</strong> tom mais conversacional, frases mais curtas, pausas estratégicas e explicitação oral de conceitos (ex.: “telómeros” como “tampas protetoras do ADN”).</li>
+            </ul>
+          </div>
+          <div class="mt-6 p-4 bg-gray-950 border border-gray-800 text-xs italic">
+            <p class="mb-2 text-white font-bold tracking-wider">Metadados:</p>
+            <p class="mb-2">Formato: 2–3 min cada episódio | Público-alvo: Especialistas / Público Geral | Output: ficheiro .mp3 + guião (.pdf/.docx)</p>
+            <p class="mb-4"><strong>Ferramentas/Processo:</strong> gravação/voz (ex.: ElevenLabs/Audacity) + edição simples + export .mp3 + upload/embeb.</p>
+            <strong class="text-white">QA áudio:</strong> consistência terminológica com a tradução escrita, controlo de velocidade, inteligibilidade, e equilíbrio entre precisão e fluidez.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08. INTERATIVOS -->
+    <section id="interativos" class="space-y-12">
+      <h2 class="text-3xl font-bold border-l-4 border-cyan-500 pl-4 text-white uppercase">08. Interativos</h2>
+
+      <div class="sci-fi-card p-8 bg-black/40 space-y-6 text-center">
+        <p class="text-lg leading-relaxed text-gray-300 text-left mb-6">
+          A componente interativa visa consolidar o conhecimento através da participação ativa do utilizador, transformando dados estáticos em experiências de aprendizagem dinâmica.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+          <div class="p-6 border border-gray-800 bg-gray-900/50">
+            <h3 class="text-cyan-400 font-bold mb-3 uppercase tracking-wider">Quiz de Consolidação</h3>
+            <p class="text-sm text-gray-400 mb-4">
+              Teste de conceitos fundamentais como telómeros, instabilidade genómica e microbioma gastrointestinal com feedback imediato.
+            </p>
+            <a id="quizLink"
+               href="quiz.html"
+               class="inline-block px-4 py-2 bg-cyan-900/40 border border-cyan-500 text-cyan-400 text-xs font-sci-fi hover:bg-cyan-500 hover:text-black transition uppercase">
+              [ACEDER AO QUIZ]
+            </a>
+          </div>
+
+          <div class="p-6 border border-gray-800 bg-gray-900/50">
+            <h3 class="text-purple-400 font-bold mb-3 uppercase tracking-wider">Simulação de Adaptação</h3>
+            <p class="text-sm text-gray-400 mb-4">
+              Simulador de decisões de rotina (sono, nutrição, stresse) e o respetivo impacto na adaptação fisiológica em órbita.
+            </p>
+            <a id="gameLink"
+               href="game.html"
+               class="inline-block px-4 py-2 bg-purple-900/40 border border-purple-500 text-purple-400 text-xs font-sci-fi hover:bg-purple-500 hover:text-black transition uppercase">
+              [ACEDER AO JOGO]
+            </a>
+          </div>
+        </div>
+
+        <div class="mt-8 text-[10px] font-sci-fi text-cyan-500 tracking-widest uppercase text-center">
+          STATUS: OK / DEPLOYMENT STABLE
+        </div>
+      </div>
+    </section>
+
+    <!-- 09. WORKSPACE -->
+    <section id="workspace" class="space-y-12">
+      <h2 class="text-3xl font-bold border-l-4 border-cyan-500 pl-4 text-white uppercase">09. Workspace</h2>
+      <div class="sci-fi-card p-8 bg-black/40 space-y-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div class="space-y-4">
+            <h3 class="text-xl font-bold text-white uppercase tracking-widest">Fluxo de Trabalho</h3>
+            <p class="text-sm text-gray-400 leading-relaxed">
+              O processo de desenvolvimento seguiu uma metodologia rigorosa: planeamento estratégico → produção de artefactos multimodais →
+              localização textual para PT-PT → controlo de qualidade (QA) → integração final no ecossistema digital.
+            </p>
+            <p class="text-sm text-gray-400 leading-relaxed">
+              <strong>Registo de decisões:</strong> Definição de termos-chave, manutenção da consistência entre texto, imagem e áudio, e validação final de registo por perfil de recetor.
+            </p>
+          </div>
+          <div class="bg-gray-900 p-6 border border-gray-800 mono text-[10px] text-cyan-500">
+            <div class="mb-2">> LOG: INITIALIZED</div>
+            <div class="mb-2">> ANALYZING_SOURCE_TEXTS [OK]</div>
+            <div class="mb-2">> LOCALIZING_TERMINOLOGY_PT_PT [CONSISTENCY: ENABLED]</div>
+            <div class="mb-2">> MULTIMODAL_ASSETS_GENERATION [OK]</div>
+            <div class="mb-2">> FINAL_QA_CHECK [STABLE]</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. REFLEXÃO FINAL -->
+    <section id="reflexao" class="space-y-12">
+      <h2 class="text-3xl font-bold border-l-4 border-cyan-500 pl-4 text-white uppercase">10. Reflexão Final</h2>
+      <div class="sci-fi-card p-10 bg-black/50 text-gray-300 space-y-6 leading-relaxed">
+        <p>
+          O desenvolvimento deste portefólio no âmbito da unidade curricular de Localização e Produção Digital Multilingue (LPDM) representou um desafio singular:
+          a transformação de um estudo científico de alta complexidade, o <em>NASA Twins Study</em>, num objeto digital multimodal e multilingue.
+          Este projeto demonstrou que a localização contemporânea não se limita à tradução textual; é um processo holístico que exige a convergência de competências em <em>UX Writing</em>,
+          design de informação e gestão terminológica.
+        </p>
+        <p>
+          A distinção entre os percursos de "Especialistas" e "Público Geral" foi o eixo estruturante de todo o trabalho.
+          A necessidade de manter o rigor biomédico no primeiro e garantir a acessibilidade no segundo obrigou a uma reflexão profunda sobre as estratégias de localização.
+          No percurso especializado, priorizou-se a precisão de termos como "instabilidade genómica" e "análise multi-ómica", enquanto no percurso de divulgação se recorreu à explicitação
+          e à paráfrase para aproximar a ciência do cidadão comum.
+        </p>
+        <p>
+          A multimodalidade desempenhou um papel crucial nesta mediação. Os mapas mentais e resumos gráficos não foram meros adornos, mas sim ferramentas de ancoragem cognitiva que sintetizam
+          resultados complexos. A criação de podcasts e elementos interativos permitiu explorar a dimensão sonora e lúdica da aprendizagem, reforçando a ideia de que o conteúdo localizado deve ser
+          adaptado tanto ao suporte como ao recetor final.
+        </p>
+        <p>
+          A integração de ferramentas de Inteligência Artificial Generativa foi fundamental como apoio à prototipagem visual e ideação inicial.
+          No entanto, a validação humana permaneceu insubstituível na garantia da coerência terminológica e na adequação de registo.
+          Este projeto consolidou competências críticas na gestão de fluxos de produção digital, reafirmando o papel do tradutor/localizador como um arquiteto da comunicação multilingue num ecossistema
+          cada vez mais complexo e visual.
+        </p>
+        <div class="pt-8 flex justify-between items-center text-xs font-sci-fi text-cyan-500">
+          <span>TERMINAL_SESSION: COMPLETE</span>
+          <span class="glitch-text uppercase">End of Transmission // Ad Astra</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11. BIBLIOGRAFIA -->
+    <section id="bibliografia" class="space-y-8">
+      <h2 class="text-3xl font-bold border-l-4 border-cyan-500 pl-4 text-white uppercase">11. Bibliografia e Fontes</h2>
+      <div class="sci-fi-card p-8 mono text-xs text-gray-400 space-y-6">
+        <p class="leading-relaxed">
+          Garrett-Bakelman, F. E., et al. (2019). The NASA Twins Study: A multidimensional analysis of a year-long human spaceflight.
+          <em>Science</em>, 364(6436).
+          <a href="https://doi.org/10.1126/science.aau8650" target="_blank" rel="noopener" class="underline hover:text-cyan-400">https://doi.org/10.1126/science.aau8650</a>
+        </p>
+
+        <p class="leading-relaxed">
+          National Aeronautics and Space Administration. (2019). <em>NASA’s Twins Study results published in Science journal</em>.
+          <a href="https://www.nasa.gov/twins-study/" target="_blank" rel="noopener" class="underline hover:text-cyan-400">https://www.nasa.gov/twins-study/</a>
+        </p>
+
+        <p class="leading-relaxed">
+          Bailey, S. M. (2024). Twins and telomeres—In space! <em>Frontiers for Young Minds</em>, 12, 1191969.
+          <a href="https://doi.org/10.3389/frym.2024.1191969" target="_blank" rel="noopener" class="underline hover:text-cyan-400">https://doi.org/10.3389/frym.2024.1191969</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- 12. CRÉDITOS -->
+    <section id="creditos" class="space-y-8 pb-12">
+      <h2 class="text-3xl font-bold border-l-4 border-cyan-500 pl-4 text-white uppercase">12. Créditos e Nota Técnica</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="sci-fi-card p-8 space-y-4">
+          <h3 class="text-cyan-400 font-sci-fi text-sm uppercase">Identificação</h3>
+          <ul class="text-sm space-y-2 text-gray-300">
+            <li><span class="text-cyan-500">Autoria:</span> Joana Sofia Brito Alves (PG57027)</li>
+            <li><span class="text-cyan-500">Unidade Curricular:</span> LPDM — UMinho — 2025/2026</li>
+            <li><span class="text-cyan-500">Docente:</span> Sílvia Lima Gonçalves Araújo</li>
+          </ul>
+        </div>
+
+        <div class="sci-fi-card p-8 space-y-4">
+          <h3 class="text-cyan-400 font-sci-fi text-sm uppercase">Recursos e Declaração</h3>
+          <div class="text-xs text-gray-400 leading-relaxed space-y-3">
+            <p><strong>Ferramentas:</strong> Implementação via HTML5/Tailwind CSS. Tipografia: <em>Orbitron, JetBrains Mono & Rajdhani</em> (via Google Fonts). Ícones: Font Awesome.</p>
+            <p><strong>Produção Multimodal:</strong> Artefactos gerados com suporte de ferramentas digitais (ex.: Canva, Figma, ElevenLabs) conforme os requisitos da UC.</p>
+            <p><strong>Declaração IA:</strong> Este projeto utilizou Inteligência Artificial Generativa como apoio à prototipagem, ideação visual e revisão de código. A validação final, gestão terminológica e responsabilidade autoral são inteiramente da estudante.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-black border-t border-cyan-900 pt-6 pb-20">
+    <div class="marquee py-2 bg-cyan-950/30 border-y border-cyan-900 text-[10px] font-sci-fi text-cyan-500 tracking-widest">
+      <span>
+        NASA TWINS STUDY // JOANA SOFIA BRITO ALVES // PG57027 // LPDM // UMINHO // 2025/26 // SYSTEM STATUS: NOMINAL // UPLINK STABLE //
+      </span>
+    </div>
+  </footer>
+
+  <script>
+    // ✅ links configuráveis
+    const quizLink = document.getElementById("quizLink");
+    const gameLink = document.getElementById("gameLink");
+    if (quizLink) quizLink.href = QUIZ_URL;
+    if (gameLink) gameLink.href = GAME_URL;
+
+    // ✅ imagens configuráveis
+    const setSrc = (id, src) => {
+      const el = document.getElementById(id);
+      if (el) el.src = src;
+    };
+    setSrc("img-mm-esp", IMG.mmEsp);
+    setSrc("img-mm-ger", IMG.mmGer);
+    setSrc("img-ga-esp-en", IMG.gaEspEn);
+    setSrc("img-ga-esp-pt", IMG.gaEspPt);
+    setSrc("img-ga-ger-en", IMG.gaGerEn);
+    setSrc("img-ga-ger-pt", IMG.gaGerPt);
+
+    // ✅ Smooth scroll SEGURO (ignora "#" e href inválidos)
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        const href = a.getAttribute('href');
+        if (!href || href === "#") return;
+
+        let target = null;
+        try { target = document.querySelector(href); }
+        catch (err) { return; }
+
+        if (!target) return;
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    // ✅ animações (IntersectionObserver)
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('opacity-100');
+          entry.target.classList.remove('opacity-0');
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('section').forEach(section => {
+      section.classList.add('opacity-0', 'transition-all', 'duration-700');
+      section.style.transform = 'translateY(20px)';
+      observer.observe(section);
+    });
+  </script>
+</body>
+</html>

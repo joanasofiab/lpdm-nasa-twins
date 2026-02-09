@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NASA Twins Study | Diagnostic Quiz</title>
+
+  <style>
+    :root {
+      --neon-cyan: #00f2ff;
+      --neon-purple: #bc13fe;
+      --dark-space: #050510;
+      --glass-bg: rgba(10, 10, 25, 0.9);
+      --border-color: rgba(0, 242, 255, 0.3);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--dark-space);
+      color: #e0e0ff;
+      font-family: 'Rajdhani', 'Orbitron', 'Segoe UI', sans-serif;
+      overflow-x: hidden;
+      background-image:
+        radial-gradient(circle at 50% 50%, rgba(20, 20, 60, 0.5) 0%, transparent 80%),
+        linear-gradient(var(--border-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
+      background-size: 100% 100%, 40px 40px, 40px 40px;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    header {
+      max-width: 900px;
+      margin: 0 auto 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--neon-cyan);
+      padding-bottom: 15px;
+    }
+
+    .hud-title {
+      font-family: 'Orbitron', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: var(--neon-cyan);
+      text-shadow: 0 0 10px var(--neon-cyan);
+      font-size: 1.2rem;
+    }
+
+    .back-btn {
+      background: transparent;
+      border: 1px solid var(--neon-purple);
+      color: var(--neon-purple);
+      padding: 8px 16px;
+      text-decoration: none;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      transition: 0.3s;
+      cursor: pointer;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .back-btn:hover {
+      background: var(--neon-purple);
+      color: white;
+      box-shadow: 0 0 15px var(--neon-purple);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--glass-bg);
+      border: 1px solid var(--border-color);
+      padding: 30px;
+      position: relative;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .container::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; width: 20px; height: 20px;
+      border-top: 3px solid var(--neon-cyan);
+      border-left: 3px solid var(--neon-cyan);
+    }
+
+    .container::after {
+      content: "";
+      position: absolute;
+      bottom: 0; right: 0; width: 20px; height: 20px;
+      border-bottom: 3px solid var(--neon-cyan);
+      border-right: 3px solid var(--neon-cyan);
+    }
+
+    .controls {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      background: rgba(255,255,255,0.05);
+      padding: 15px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+
+    .control-group { display: flex; align-items: center; gap: 10px; }
+
+    .toggle-switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+    .slider {
+      position: absolute; cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #333; transition: .4s; border-radius: 20px;
+    }
+
+    .slider:before {
+      position: absolute; content: "";
+      height: 14px; width: 14px; left: 3px; bottom: 3px;
+      background-color: white; transition: .4s; border-radius: 50%;
+    }
+
+    input:checked + .slider { background-color: var(--neon-purple); }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    .progress-container { margin-bottom: 30px; }
+
+    .progress-header {
+      display: flex; justify-content: space-between;
+      margin-bottom: 10px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.8rem;
+    }
+
+    .progress-bar-bg { height: 6px; background: #222; width: 100%; border-radius: 3px; overflow: hidden; }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    .question-card { display: none; animation: fadeIn 0.5s ease; }
+    .question-card.active { display: block; }
+
+    .difficulty-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      font-size: 10px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      border-radius: 2px;
+      text-transform: uppercase;
+    }
+
+    .tag-basic { background: #008800; color: white; }
+    .tag-advanced { background: #aa0000; color: white; }
+
+    .question-text {
+      font-size: 1.25rem;
+      margin-bottom: 25px;
+      line-height: 1.4;
+      color: white;
+      font-weight: 500;
+    }
+
+    .options-grid { display: grid; gap: 10px; margin-bottom: 25px; }
+
+    .option-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 14px;
+      text-align: left;
+      color: #ccc;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 0.95rem;
+      border-radius: 4px;
+      outline: none;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      background: rgba(0, 242, 255, 0.1);
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+    }
+
+    .option-btn:focus-visible { box-shadow: 0 0 0 2px var(--neon-cyan); }
+
+    .option-btn.selected {
+      background: rgba(188, 19, 254, 0.2);
+      border-color: var(--neon-purple);
+      color: white;
+    }
+
+    .option-btn.correct { background: rgba(0, 255, 0, 0.2) !important; border-color: #00ff00 !important; color: #00ff00 !important; }
+    .option-btn.incorrect { background: rgba(255, 0, 0, 0.2) !important; border-color: #ff0000 !important; color: #ff0000 !important; }
+
+    .match-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+
+    .match-select {
+      background: #111;
+      color: var(--neon-cyan);
+      border: 1px solid var(--neon-cyan);
+      padding: 10px;
+      border-radius: 4px;
+      width: 100%;
+      font-family: inherit;
+    }
+
+    .feedback-box {
+      display: none;
+      padding: 15px;
+      background: rgba(0, 242, 255, 0.05);
+      border-left: 4px solid var(--neon-cyan);
+      margin-top: 20px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .nav-actions { display: flex; justify-content: space-between; margin-top: 30px; gap: 10px; }
+
+    .btn-action {
+      padding: 12px 20px;
+      font-family: 'Orbitron', sans-serif;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      cursor: pointer;
+      border: none;
+      transition: 0.3s;
+      flex: 1;
+    }
+
+    .btn-submit { background: var(--neon-purple); color: #fff; }
+    .btn-submit:hover:not(:disabled) { box-shadow: 0 0 15px var(--neon-purple); }
+
+    .btn-next { background: var(--neon-cyan); color: #000; }
+    .btn-next:hover:not(:disabled) { box-shadow: 0 0 15px var(--neon-cyan); }
+
+    .btn-action:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    #results-screen { display: none; text-align: center; }
+
+    .score-circle {
+      width: 140px; height: 140px;
+      border: 4px solid var(--neon-cyan);
+      border-radius: 50%;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      margin: 0 auto 20px;
+      box-shadow: 0 0 20px var(--neon-cyan);
+    }
+
+    .score-num { font-size: 2.2rem; font-weight: bold; font-family: 'Orbitron'; }
+    .score-label { font-size: 0.7rem; text-transform: uppercase; }
+
+    .review-item { text-align: left; padding: 15px; border-bottom: 1px solid #333; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 600px) {
+      .match-pair { grid-template-columns: 1fr; gap: 5px; }
+      .question-text { font-size: 1.1rem; }
+      .hud-title { font-size: 1rem; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="hud-title">NASA TWINS QUIZ</div>
+    <a href="index.html" class="back-btn">← Voltar ao Portefólio</a>
+  </header>
+
+  <div class="container">
+    <div id="quiz-ui">
+      <div class="controls">
+        <div class="control-group">
+          <label for="diff-toggle">Modo Avançado</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="diff-toggle" aria-label="Ativar modo avançado">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="control-group">
+          <label for="timer-toggle">Timer</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="timer-toggle" aria-label="Ativar temporizador">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div id="timer-val" aria-label="Tempo decorrido"
+             style="display:none; color: var(--neon-purple); font-family: monospace; font-weight: bold; font-size: 1.1rem; margin-left: auto;">
+          00:00
+        </div>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-header">
+          <span id="p-text">Questão 1 / 20</span>
+          <span id="s-text">Score: 0</span>
+        </div>
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="p-fill"></div></div>
+      </div>
+
+      <div id="q-area"></div>
+
+      <div class="feedback-box" id="f-box" role="status" aria-live="polite">
+        <strong id="f-status"></strong><br>
+        <span id="f-text"></span>
+      </div>
+
+      <div class="nav-actions">
+        <button class="btn-action btn-submit" id="sub-btn" disabled>Submeter Resposta</button>
+        <button class="btn-action btn-next" id="next-btn" style="display:none;">Próxima Questão</button>
+      </div>
+    </div>
+
+    <div id="results-screen">
+      <h2 class="hud-title" style="margin-bottom: 20px;">Relatório Final de Missão</h2>
+      <div class="score-circle">
+        <div class="score-num" id="res-pct">0%</div>
+        <div class="score-label">Precisão</div>
+      </div>
+      <p id="res-score" style="margin-bottom: 20px;"></p>
+
+      <div class="nav-actions">
+        <button class="btn-action btn-next" id="reset-btn">Reiniciar</button>
+        <button class="btn-action btn-submit" id="rev-btn">Rever Respostas</button>
+      </div>
+
+      <div id="rev-area"
+           style="display:none; margin-top: 30px; max-height: 400px; overflow-y: auto; background: rgba(0,0,0,0.3); border: 1px solid #333;">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'nasa_twins_quiz_v1';
+
+    const QUESTIONS = [
+      { id: 1, type: "mc", diff: "basic", q: "Qual foi a duração aproximada da missão de Scott Kelly na ISS para o NASA Twins Study?", options: ["3 meses", "6 meses", "Quase 1 ano (340 dias)", "2 anos"], correct: 2, f: "A missão durou 340 dias para simular os efeitos de uma viagem de longa duração a Marte." },
+      { id: 2, type: "mc", diff: "basic", q: "O que aconteceu aos telómeros de Scott Kelly durante o tempo em que esteve em órbita?", options: ["Ficaram mais curtos", "Aumentaram de comprimento", "Mantiveram-se idênticos", "Desapareceram"], correct: 1, f: "Contrariamente ao esperado, os telómeros aumentaram no espaço, mas encurtaram rapidamente após o regresso à Terra." },
+      { id: 3, type: "tf", diff: "basic", q: "O ADN de Scott Kelly mudou 7% em comparação com o do seu irmão.", correct: false, f: "Falso. Apenas 7% da expressão genética (epigenética) não voltou ao normal imediatamente, não o ADN em si." },
+      { id: 4, type: "mc", diff: "advanced", q: "Que marcador biológico indicou que o corpo de Scott estava sob stresse oxidativo?", options: ["Níveis de glicose", "Aumento de citocinas inflamatórias", "Diminuição de glóbulos vermelhos", "Pressão arterial baixa"], correct: 1, f: "O aumento de citocinas e outros marcadores inflamatórios confirmou que o ambiente espacial é stressante para o sistema imunitário." },
+      { id: 5, type: "mc", diff: "advanced", q: "A 'instabilidade genómica' observada no estudo refere-se a:", options: ["Crescimento ósseo acelerado", "Danos no ADN e mutações cromossómicas", "Mudança na cor dos olhos", "Perda de memória"], correct: 1, f: "A instabilidade genómica envolve danos estruturais no material genético causados por radiação e microgravidade." },
+      { id: 6, type: "mc", diff: "basic", q: "A metilação do ADN é um exemplo de que tipo de mudança?", options: ["Mutação Genética", "Alteração Epigenética", "Cirurgia Plástica", "Dano Mecânico"], correct: 1, f: "A metilação altera a forma como os genes são lidos (expressão) sem mudar a sequência base do ADN." },
+      { id: 7, type: "mc", diff: "basic", q: "O que aconteceu ao microbioma intestinal de Scott Kelly no espaço?", options: ["Extinguiu-se", "A diversidade de bactérias mudou", "Tornou-se imune a doenças", "Ficou igual ao de Mark"], correct: 1, f: "A dieta espacial e o ambiente alteraram significativamente o rácio de bactérias no sistema digestivo." },
+      { id: 8, type: "tf", diff: "advanced", q: "O estudo comprovou que as viagens espaciais não têm efeitos a longo prazo no cérebro.", correct: false, f: "Falso. Foram observadas descidas na performance cognitiva (velocidade e precisão) após o regresso à Terra." },
+      { id: 9, type: "multi", diff: "advanced", q: "Quais destas áreas apresentaram alterações persistentes 6 meses após a missão? (Escolha 2)", options: ["Danos no ADN (instabilidade)", "Expressão de alguns genes", "Comprimento dos telómeros (longos)", "Massa muscular original"], correct: [0, 1], f: "Embora 90% tenha voltado ao normal, a instabilidade genómica e alguns padrões de expressão genética persistiram." },
+      { id: 10, type: "mc", diff: "basic", q: "Qual a importância de usar gémeos idênticos neste estudo?", options: ["Reduzir custos", "Ter um controlo genético quase perfeito na Terra", "A NASA só aceita irmãos", "Para publicidade"], correct: 1, f: "Gémeos idênticos permitem isolar os efeitos do ambiente, já que o ponto de partida genético é o mesmo." },
+      { id: 11, type: "mc", diff: "advanced", q: "A Síndrome Neuro-ocular Associada ao Voo Espacial (SANS) causa:", options: ["Melhoria da visão", "Achatamento do globo ocular e inchaço do nervo ótico", "Cegueira temporária a cores", "Aumento da audição"], correct: 1, f: "A SANS é causada pela deslocação de fluidos para a cabeça em microgravidade, afetando a estrutura ocular." },
+      { id: 12, type: "tf", diff: "basic", q: "O microbioma de Scott voltou ao normal logo que ele aterrou.", correct: true, f: "Verdadeiro. A composição bacteriana voltou rapidamente à linha de base após o regresso à dieta e ambiente terrestres." },
+      { id: 13, type: "mc", diff: "basic", q: "O que são telómeros na analogia usada pela NASA?", options: ["Motores das células", "Tampas de proteção (como as das pontas dos atacadores)", "Sinalizadores de GPS", "Filtros de ar"], correct: 1, f: "Os telómeros protegem as extremidades dos cromossomas contra a degradação e fusão." },
+      { id: 14, type: "multi", diff: "basic", q: "Selecione os dois irmãos envolvidos no estudo:", options: ["Buzz Aldrin", "Scott Kelly", "Neil Armstrong", "Mark Kelly"], correct: [1, 3], f: "Scott Kelly foi o gémeo que viajou para o espaço, enquanto Mark Kelly ficou na Terra como controlo." },
+      { id: 15, type: "tf", diff: "advanced", q: "A maioria das mudanças epigenéticas observadas foi atribuída à radiação espacial.", correct: true, f: "Verdadeiro. A radiação é um dos principais motores de danos genéticos e alterações de expressão no espaço profundo." },
+      { id: 16, type: "mc", diff: "advanced", q: "A hipometilação observada em Scott durante a missão estava ligada a:", options: ["Digestão de gorduras", "Respostas do sistema imunitário", "Crescimento de cabelo", "Paladar"], correct: 1, f: "A alteração na metilação afetou genes responsáveis pela defesa do organismo e resposta a inflamações." },
+      { id: 17, type: "match", diff: "basic", q: "Associe as funções às partes do estudo:", pairs: [{t: "ISS", d: "Ambiente de Teste"}, {t: "Terra", d: "Ambiente de Controlo"}], f: "A Terra serviu para monitorizar a evolução natural (Mark) enquanto o espaço testava a resiliência (Scott)." },
+      { id: 18, type: "mc", diff: "basic", q: "Uma 'limitação' do estudo citada pela NASA é:", options: ["Ter durado pouco tempo", "O tamanho da amostra (apenas 2 pessoas)", "Falta de equipamento", "Os gémeos não se davam bem"], correct: 1, f: "Sendo um estudo N=1 (um par), os resultados são valiosos mas não podem ser generalizados a toda a população." },
+      { id: 19, type: "match", diff: "advanced", q: "Associe os termos técnicos:", pairs: [{t: "Citocinas", d: "Inflamação"}, {t: "Telómeros", d: "Envelhecimento"}], f: "Estes são dois dos principais biomarcadores monitorizados para perceber a saúde celular do astronauta." },
+      { id: 20, type: "mc", diff: "basic", q: "O objetivo final desta investigação é preparar humanos para:", options: ["Férias na Lua", "Viver no fundo do mar", "Uma missão tripulada a Marte", "Construir cidades flutuantes"], correct: 2, f: "Entender como o corpo resiste a um ano no espaço é crucial para a viagem de três anos necessária para Marte." }
+    ];
+
+    let cur = 0;
+    let score = 0;
+    let userAns = [];
+    let time = 0;
+    let tInt;
+
+    const qArea = document.getElementById('q-area');
+    const pFill = document.getElementById('p-fill');
+    const pText = document.getElementById('p-text');
+    const sText = document.getElementById('s-text');
+    const fBox = document.getElementById('f-box');
+    const fStatus = document.getElementById('f-status');
+    const fText = document.getElementById('f-text');
+    const subBtn = document.getElementById('sub-btn');
+    const nextBtn = document.getElementById('next-btn');
+
+    function safeLoad() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) return null;
+        return JSON.parse(saved);
+      } catch {
+        return null;
+      }
+    }
+
+    function init() {
+      const d = safeLoad();
+      if (d && Number.isInteger(d.cur)) {
+        cur = d.cur || 0;
+        score = d.score || 0;
+        userAns = Array.isArray(d.userAns) ? d.userAns : [];
+      }
+
+      render();
+
+      document.getElementById('timer-toggle').onchange = (e) => {
+        document.getElementById('timer-val').style.display = e.target.checked ? 'block' : 'none';
+        if (e.target.checked) startT(); else clearInterval(tInt);
+      };
+    }
+
+    function startT() {
+      clearInterval(tInt);
+      tInt = setInterval(() => {
+        time++;
+        const m = String(Math.floor(time/60)).padStart(2, '0');
+        const s = String(time%60).padStart(2, '0');
+        document.getElementById('timer-val').innerText = `${m}:${s}`;
+      }, 1000);
+    }
+
+    function render() {
+      if (cur >= QUESTIONS.length) return showRes();
+
+      const q = QUESTIONS[cur];
+      fBox.style.display = 'none';
+      nextBtn.style.display = 'none';
+      subBtn.style.display = 'block';
+      subBtn.disabled = true;
+      nextBtn.innerText = "Próxima Questão";
+
+      pFill.style.width = `${((cur + 1) / QUESTIONS.length) * 100}%`;
+      pText.innerText = `Questão ${cur + 1} / ${QUESTIONS.length}`;
+      sText.innerText = `Score: ${score}`;
+
+      // constrói HTML
+      let h = `<div class="question-card active">
+        <span class="difficulty-tag ${q.diff === 'basic' ? 'tag-basic' : 'tag-advanced'}">${q.diff}</span>
+        <div class="question-text">${q.q}</div>`;
+
+      if (q.type === 'match') {
+        q.pairs.forEach((p) => {
+          h += `<div class="match-pair">
+            <div>${p.t}</div>
+            <select class="match-select" onchange="checkMatch()">
+              <option value="">Escolha...</option>
+              ${q.pairs.map(x => `<option value="${x.d}">${x.d}</option>`).join('')}
+            </select>
+          </div>`;
+        });
+      } else {
+        h += `<div class="options-grid">`;
+        if (q.type === 'mc' || q.type === 'tf') {
+          const opts = q.type === 'tf' ? ["Verdadeiro", "Falso"] : q.options;
+          opts.forEach((o, i) => h += `<button class="option-btn" onclick="sel(${i})">${o}</button>`);
+        } else if (q.type === 'multi') {
+          q.options.forEach((o, i) => h += `<button class="option-btn" onclick="msel(${i})">${o}</button>`);
+        }
+        h += `</div>`;
+      }
+
+      h += `</div>`;
+      qArea.innerHTML = h;
+    }
+
+    window.sel = (i) => {
+      document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+      document.querySelectorAll('.option-btn')[i].classList.add('selected');
+      subBtn.disabled = false;
+    };
+
+    window.msel = (i) => {
+      document.querySelectorAll('.option-btn')[i].classList.toggle('selected');
+      subBtn.disabled = document.querySelectorAll('.option-btn.selected').length === 0;
+    };
+
+    window.checkMatch = () => {
+      const sels = document.querySelectorAll('.match-select');
+      subBtn.disabled = Array.from(sels).some(s => s.value === "");
+    };
+
+    subBtn.onclick = () => {
+      const q = QUESTIONS[cur];
+      let isC = false;
+      let val;
+
+      if (q.type === 'mc' || q.type === 'tf') {
+        const s = document.querySelector('.option-btn.selected');
+        const idx = Array.from(s.parentNode.children).indexOf(s);
+        val = idx;
+        isC = (q.type === 'tf') ? ((idx === 0) === q.correct) : (idx === q.correct);
+
+        document.querySelectorAll('.option-btn').forEach((b, i) => {
+          if (i === idx) b.classList.add(isC ? 'correct' : 'incorrect');
+          const isRight = (q.type === 'tf') ? ((i === 0) === q.correct) : (i === q.correct);
+          if (!isC && isRight) b.classList.add('correct');
+        });
+
+      } else if (q.type === 'multi') {
+        const s = Array.from(document.querySelectorAll('.option-btn.selected'))
+          .map(b => Array.from(b.parentNode.children).indexOf(b));
+        val = s;
+        isC = s.length === q.correct.length && s.every(v => q.correct.includes(v));
+
+        document.querySelectorAll('.option-btn').forEach((b, i) => {
+          if (s.includes(i)) b.classList.add(isC ? 'correct' : 'incorrect');
+          if (!isC && q.correct.includes(i)) b.classList.add('correct');
+        });
+
+      } else if (q.type === 'match') {
+        const s = Array.from(document.querySelectorAll('.match-select')).map(x => x.value);
+        val = s;
+        isC = s.every((v, i) => v === q.pairs[i].d);
+
+        document.querySelectorAll('.match-select').forEach((x, i) => {
+          x.style.borderColor = (s[i] === q.pairs[i].d) ? '#00ff00' : '#ff0000';
+        });
+      }
+
+      const multi = (document.getElementById('diff-toggle').checked || q.diff === 'advanced') ? 2 : 1;
+      if (isC) score += multi;
+
+      fStatus.innerText = isC ? "✓ CORRETO" : "× INCORRETO";
+      fStatus.style.color = isC ? "#00ff00" : "#ff0000";
+      fText.innerText = q.f;
+      fBox.style.display = 'block';
+
+      subBtn.style.display = 'none';
+      nextBtn.style.display = 'block';
+      if (cur === QUESTIONS.length - 1) nextBtn.innerText = "Finalizar";
+
+      userAns[cur] = { isC, val };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ cur: cur + 1, score, userAns }));
+    };
+
+    nextBtn.onclick = () => { cur++; render(); };
+
+    function showRes() {
+      document.getElementById('quiz-ui').style.display = 'none';
+      document.getElementById('results-screen').style.display = 'block';
+
+      const total = QUESTIONS.reduce((a, q) => a + ((document.getElementById('diff-toggle').checked || q.diff === 'advanced') ? 2 : 1), 0);
+      const pct = Math.round((score / total) * 100);
+
+      document.getElementById('res-pct').innerText = `${pct}%`;
+      document.getElementById('res-score').innerText = `Obteve ${score} pontos num total de ${total}.`;
+      clearInterval(tInt);
+    }
+
+    document.getElementById('rev-btn').onclick = () => {
+      const area = document.getElementById('rev-area');
+      area.style.display = 'block';
+
+      area.innerHTML = QUESTIONS.map((q, i) => {
+        const a = userAns[i] || { isC: false, val: null };
+        return `
+          <div class="review-item">
+            <strong style="color: ${a.isC ? '#00ff00' : '#ff0000'}">Q${i+1}: ${q.q}</strong><br>
+            <small>${q.f}</small>
+          </div>
+        `;
+      }).join('');
+    };
+
+    document.getElementById('reset-btn').onclick = () => {
+      localStorage.removeItem(STORAGE_KEY);
+      location.reload();
+    };
+
+    init();
+  </script>
+</body>
+</html>
